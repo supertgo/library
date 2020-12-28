@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html lang="en-US"> 
+    <head>
+        <title>SuperTgo Library</title>
+        <link rel="stylesheet" href="style.css">
+        <meta name="author" content="Thiago Roberto">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    </head>
+
+    <body>
+        <h1>Welcome to Super Tgo Library</h1>
+
+        <input type="button" value="NEW BOOK" id="newButton">
+        <div id="library"></div>
+        <div id="window">
+            <form id="form">
+                <span id="close">x</span><br>
+
+                <legend>Book:</legend>
+
+                <p id="pBookName">
+                    <input type="text" id="bookName" placeholder="Title"> 
+                    
+                </P>
+                <P id="pAuthorName">
+                    <input type="text" id="authorName" placeholder="Author"> <br>
+                    Only letters
+                </P>
+
+                <P id="pPages">
+                 <input type="text" id="pages" placeholder="Pages"> <br>
+                 Only numbers
+                </P>
+
+                <label> Read</label>
+                <input type="checkbox" id="checkbox"> <br>
+
+                <input type="button" value="Add" id="addButton" >
+            
+            </form>
+        </div>
+        <script type="text/javascript" src="script.js"></script>
+    </body>
+</html>
