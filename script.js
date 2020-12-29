@@ -10,73 +10,92 @@ const newButtonEl = document.querySelector('#newButton'),
     pagesEl = document.querySelector('#pages');
 
 
+newButtonEl.addEventListener('click', toggleWindow);
+closeEl.addEventListener('click', toggleWindow);
+closeEl.addEventListener('mouseover', () => closeEl.style.cursor = 'pointer' );
+addButtonEl.addEventListener('click', addBookToLibrary);
+
 
 let myLibrary = [];
-let code = 0;
-//let newBook;
+
+
 
 function toggleWindow () {
 
     if (divWindowEl.style.display === 'flex'){
+
         divWindowEl.style.display = 'none';
-        bodyEl.style.backgroundColor = 'rgb(129, 192, 248)';
-        libraryEl.style.display = 'flex';
-        
-        
+        bodyEl.style.backgroundColor = 'rgb(120, 2, 255)';
+        libraryEl.style.display = 'flex';    
     }
         
     else{
+
         divWindowEl.style.display = 'flex';
         bodyEl.style.backgroundColor = 'rgba(0, 0, 0, .8)';
         libraryEl.style.display = 'none';
-        
     }
 
-    
 }
 
 class Book {
+
     constructor (title, author, pages, read) {
+
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.read = read;
         this.id = myLibrary.length;
+
     }
 }
 
 function clearPopUp() {
+
     pagesEl.value = '';
     authorEl.value = '';
     bookNameEl.value = '';
+
 }
 
 function addBookToLibrary() {
 
     if (/^\d*$/g.test(pagesEl.value) === true 
-        && /^[a-z A-z]*$/g.test(authorEl.value) ===true && bookNameEl.value !== ''){
+        && /^[a-z A-z]*$/g.test(authorEl.value) === true 
+        && bookNameEl.value !== '')
+    {
 
-        createBook();
+        let newBook = new Book(bookNameEl.value, authorEl.value, pagesEl.value, readEl.value);
+        myLibrary.push(newBook);
+
+        createBook(newBook);
+        saveStorage();
+        render();
         clearPopUp();
 
-        //renderLibrary();
-        //data();
+        
     }
 
     else {
+
         alert('Check the description below the text area, something is wrong!!!');
         
     }
 
 }
 
-function createBook() {
-    let newBook = new Book(bookNameEl.value, authorEl.value, pagesEl.value, readEl.value);
-    myLibrary.push(newBook);
+function createBook(item) {
 
-    
 
     toggleWindow();
+
+    if (divWindowEl.style.display === 'flex'){
+
+        divWindowEl.style.display = 'none';
+        bodyEl.style.backgroundColor = 'rgb(120, 2, 255)';
+        libraryEl.style.display = 'flex';    
+    }
 
     let divBook = document.createElement('div');
     let lbookName = document.createElement('p');
@@ -86,9 +105,13 @@ function createBook() {
     let buttonRemove = document.createElement('button');
     
     
-    lbookName.textContent = 'Book: ' + bookNameEl.value;
-    lbookAuthor.textContent ='By' + authorEl.value;
-    lbookPage.textContent = 'Pages:' + pagesEl.value;
+    lbookName.textContent = 'Book: ' +  item.title;
+    lbookAuthor.textContent ='By ' + item.author;
+    lbookPage.textContent = item.pages +' Pages';
+
+    lbookAuthor.classList.add('details');
+    lbookName.classList.add('details');
+    lbookPage.classList.add('details');
 
     if (readEl.checked){
 
@@ -106,8 +129,8 @@ function createBook() {
     buttonRemove.textContent = 'Remove'
     buttonRemove.classList.add('buttonRemove');
 
-    divBook.id = code;
-    buttonRemove.id = code;
+    divBook.id = myLibrary.indexOf(item);
+    
 
     divBook.appendChild(lbookName);
     divBook.appendChild(lbookAuthor);
@@ -119,18 +142,14 @@ function createBook() {
 
     buttonRead.addEventListener('click', () => changeButtonRead(buttonRead));
 
-    buttonRemove.addEventListener('click', () => {
-        remove(buttonRemove.id, code)
-        
-    });
+    buttonRemove.addEventListener('click', () =>  remove(item));
 
-    code++;
-
+    
 }
 
 function changeButtonRead (button){
-    if (button.textContent === 'Read' ){
 
+    if (button.textContent === 'Read' ){
         button.classList.remove('greenButton');
         button.textContent = 'Not Read';
         button.classList.add('redButton');
@@ -143,48 +162,50 @@ function changeButtonRead (button){
         button.classList.add('greenButton');
     }
 
-    //renderLibrary();
-    //data();
+
+    saveStorage();
+    
 }
- function getElementToRemove(divToRemove) {
+ 
+function remove(item) {
 
-    let a = divToRemove.firstChild.textContent;
+    myLibrary.splice(myLibrary.indexOf(item), 1);
 
-    myLibrary.forEach(e => {
-        if(e.title === a.substr(6))
-            return(myLibrary.indexOf(e));
-    });
- }
-
-function remove(id) {
-
-    let divToRemove = document.getElementById(id);
-   
-    myLibrary.splice(getElementToRemove(divToRemove), 1);
-    divToRemove.remove();
-
+    saveStorage();
+    render();
 
 }
 
-function refresh() {
-    if (localStorage.myLibrary ){
-        let render = JSON.parse(localStorage.getItem('myLibrary'));
-        myLibrary = render;
+function render() {
+
+    const library = document.querySelector('#library');
+    const books = document.querySelectorAll('.divBook');
+
+    books.forEach(b => library.removeChild(b));
+
+    for (let i = 0; i < myLibrary.length; i++)
+        createBook(myLibrary[i]);
+}
+
+function getStorage() {
+
+    return JSON.parse(localStorage.getItem('myLibrary'));
+
+}
+function storage() {
+   if (!localStorage.myLibrary)
+        render();
+
+    else{
+        myLibrary = getStorage();
+        render();
     }
-
-    else
-        data();
 }
 
-//unction //data() {
-//    localStorage.setItem(`myLibrary`, JSON.stringify(myLibrary));
-//}
+function saveStorage() {
+   localStorage.setItem(`myLibrary`, JSON.stringify(myLibrary));
+}
 
-//myLibrary.forEach(book => console.log(book));
 
-newButtonEl.addEventListener('click', toggleWindow);
-closeEl.addEventListener('click', toggleWindow);
-closeEl.addEventListener('mouseover', () => closeEl.style.cursor = 'pointer' );
-addButtonEl.addEventListener('click', addBookToLibrary);
 
-//refresh();
+storage();
